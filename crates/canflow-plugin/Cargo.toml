@@ -1,0 +1,14 @@
+[package]
+name = "canflow-plugin"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+canflow-types = { workspace = true }
+canflow-analysis = { workspace = true }
+libloading = { workspace = true }
+notify = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }

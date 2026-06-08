@@ -1,0 +1,16 @@
+# Example fuzzing task configuration
+
+[task]
+name = "ecu_discovery_fuzz"
+description = "Fuzz UDS service discovery across common ECU addresses"
+
+[fuzz]
+target_ids = [0x7DF, 0x7E0, 0x7E1, 0x7E2]
+iterations = 5000
+min_dlc = 2
+max_dlc = 8
+delay_us = 500
+
+# Optional: specific service IDs to focus on
+[fuzz.constraints]
+first_byte_range = [0x01, 0x3F]  # UDS service ID range

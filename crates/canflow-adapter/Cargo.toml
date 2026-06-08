@@ -1,0 +1,14 @@
+[package]
+name = "canflow-adapter"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+canflow-types = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+nix = { workspace = true }
+libc = { workspace = true }
+tracing = { workspace = true }
+regex = { workspace = true }
+chrono = { workspace = true }

@@ -1,0 +1,13 @@
+[package]
+name = "canflow-tui"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+canflow-types = { workspace = true }
+canflow-bus = { workspace = true }
+canflow-analysis = { workspace = true }
+tokio = { workspace = true }
+ratatui = { workspace = true }
+crossterm = { workspace = true }
+tracing = { workspace = true }

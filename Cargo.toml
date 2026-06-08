@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/canflow-types",
+    "crates/canflow-adapter",
+    "crates/canflow-bus",
+    "crates/canflow-analysis",
+    "crates/canflow-agent",
+    "crates/canflow-plugin",
+    "crates/canflow-tui",
+    "crates/canflow-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+async-trait = "0.1"
+bytes = "1"
+arc-swap = "1"
+dashmap = "6"
+regex = "1"
+clap = { version = "4", features = ["derive"] }
+nix = { version = "0.29", features = ["socket", "net", "process", "signal", "resource"] }
+libc = "0.2"
+crossterm = "0.28"
+ratatui = "0.29"
+mlua = { version = "0.10", features = ["lua54", "send", "serialize", "vendored"] }
+libloading = "0.8"
+notify = "7"
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+anyhow = "1"
+
+canflow-types = { path = "crates/canflow-types" }
+canflow-adapter = { path = "crates/canflow-adapter" }
+canflow-bus = { path = "crates/canflow-bus" }
+canflow-analysis = { path = "crates/canflow-analysis" }
+canflow-agent = { path = "crates/canflow-agent" }
+canflow-plugin = { path = "crates/canflow-plugin" }
+canflow-tui = { path = "crates/canflow-tui" }
+canflow-cli = { path = "crates/canflow-cli" }

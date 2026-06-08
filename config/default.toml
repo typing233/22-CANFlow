@@ -1,0 +1,39 @@
+[bus]
+channel_capacity = 16384
+
+# [bus.fault_injection]
+# drop_rate = 0.01
+# delay_ms = 5
+# corrupt_rate = 0.0
+# reorder_window = 3
+
+[[adapters]]
+name = "vcan0"
+[adapters.kind]
+type = "VirtualCan"
+interface = "vcan0"
+[adapters.reconnect]
+max_retries = 0
+base_delay_ms = 100
+max_delay_ms = 5000
+
+[analysis]
+enabled = ["entropy", "period", "burst", "uds"]
+
+[analysis.entropy]
+window_size = 64
+threshold = 6.5
+
+[analysis.period]
+jitter_threshold_pct = 25.0
+learning_samples = 100
+
+[analysis.burst]
+rate_multiplier = 3.0
+window_secs = 1.0
+
+[logging]
+format = "json"
+directory = "./logs"
+rotation = "hourly"
+max_files = 168
