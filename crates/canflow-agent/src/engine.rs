@@ -1,4 +1,5 @@
 use canflow_types::{CanFlowError, CanFrame, AgentKind, AgentTaskConfig};
+use std::path::Path;
 use tokio::sync::mpsc;
 use tracing::info;
 
@@ -9,6 +10,7 @@ use crate::lua_runtime::LuaRuntime;
 use crate::pipeline::Pipeline;
 use crate::sandbox::SandboxConfig;
 use crate::python_runtime::PythonRuntime;
+use crate::process_runner::ProcessRunner;
 
 pub struct AgentEngine {
     tx: mpsc::Sender<CanFrame>,
@@ -17,6 +19,29 @@ pub struct AgentEngine {
 impl AgentEngine {
     pub fn new(tx: mpsc::Sender<CanFrame>) -> Self {
         Self { tx }
+    }
+
+    pub async fn run_script(&self, script: &Path) -> Result<String, CanFlowError> {
+        let ext = script.extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("");
+
+        let sandbox = SandboxConfig::default();
+        let mut runner = match ext {
+            "lua" => ProcessRunner::lua(script, sandbox)?,
+            "py" => ProcessRunner::python(script, sandbox)?,
+            _ => return Err(CanFlowError::Config(
+                format!("unsupported script extension: .{}", ext)
+            )),
+        };
+
+        let frames = runner.run_to_completion().await?;
+        for frame in &frames {
+            if self.tx.send(frame.clone()).await.is_err() {
+                return Err(CanFlowError::ChannelClosed);
+            }
+        }
+        Ok(format!("{} agent produced {} frames", ext, frames.len()))
     }
 
     pub async fn run_task(&self, config: &AgentTaskConfig) -> Result<String, CanFlowError> {

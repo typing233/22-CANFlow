@@ -115,6 +115,7 @@ impl Default for AnalysisConfig {
 pub struct EntropyConfig {
     pub window_size: usize,
     pub threshold: f64,
+    pub learning_frames: u64,
 }
 
 impl Default for EntropyConfig {
@@ -122,6 +123,7 @@ impl Default for EntropyConfig {
         Self {
             window_size: 64,
             threshold: 6.5,
+            learning_frames: 1000,
         }
     }
 }

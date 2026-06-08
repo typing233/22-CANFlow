@@ -9,6 +9,7 @@ members = [
     "crates/canflow-plugin",
     "crates/canflow-tui",
     "crates/canflow-cli",
+    "crates/canflow-tests",
 ]
 
 [workspace.package]

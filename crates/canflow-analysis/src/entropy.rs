@@ -9,6 +9,8 @@ pub struct EntropyAnalyzer {
     threshold: f64,
     baseline: HashMap<u32, f64>,
     learning: bool,
+    learning_frames: u64,
+    frames_seen: u64,
 }
 
 impl EntropyAnalyzer {
@@ -19,6 +21,8 @@ impl EntropyAnalyzer {
             threshold: config.threshold,
             baseline: HashMap::new(),
             learning: true,
+            learning_frames: config.learning_frames,
+            frames_seen: 0,
         }
     }
 
@@ -33,6 +37,7 @@ impl EntropyAnalyzer {
             .or_insert_with(|| SlidingWindow::new(self.window_size));
 
         window.push(frame.data);
+        self.frames_seen += 1;
 
         if !window.is_full() {
             return Vec::new();
@@ -42,6 +47,13 @@ impl EntropyAnalyzer {
 
         if self.learning {
             self.baseline.insert(id, entropy);
+            if self.frames_seen >= self.learning_frames {
+                self.finish_learning();
+                return vec![Alert::info("entropy", None, format!(
+                    "learning complete after {} frames, {} IDs baselined",
+                    self.frames_seen, self.baseline.len()
+                ))];
+            }
             return Vec::new();
         }
 
@@ -80,6 +92,7 @@ impl EntropyAnalyzer {
         self.windows.clear();
         self.baseline.clear();
         self.learning = true;
+        self.frames_seen = 0;
     }
 
     fn compute_entropy(&self, id: u32) -> f64 {

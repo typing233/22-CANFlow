@@ -238,6 +238,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "canflow-tests"
+version = "0.1.0"
+dependencies = [
+ "canflow-adapter",
+ "canflow-agent",
+ "canflow-analysis",
+ "canflow-bus",
+ "canflow-types",
+ "rand",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "canflow-tui"
 version = "0.1.0"
 dependencies = [
