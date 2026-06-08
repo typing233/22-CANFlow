@@ -4,11 +4,15 @@ use std::path::PathBuf;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AppConfig {
+    #[serde(default)]
     pub adapters: Vec<AdapterConfig>,
+    #[serde(default)]
     pub bus: BusConfig,
+    #[serde(default)]
     pub analysis: AnalysisConfig,
     #[serde(default)]
     pub agents: Vec<AgentTaskConfig>,
+    #[serde(default)]
     pub logging: LogConfig,
 }
 
@@ -38,8 +42,11 @@ pub enum ReplayFormat {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReconnectPolicy {
+    #[serde(default)]
     pub max_retries: u32,
+    #[serde(default = "default_base_delay")]
     pub base_delay_ms: u64,
+    #[serde(default = "default_max_delay")]
     pub max_delay_ms: u64,
 }
 
@@ -47,11 +54,14 @@ impl Default for ReconnectPolicy {
     fn default() -> Self {
         Self {
             max_retries: 0,
-            base_delay_ms: 100,
-            max_delay_ms: 5000,
+            base_delay_ms: default_base_delay(),
+            max_delay_ms: default_max_delay(),
         }
     }
 }
+
+fn default_base_delay() -> u64 { 100 }
+fn default_max_delay() -> u64 { 5000 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BusConfig {
@@ -113,50 +123,67 @@ impl Default for AnalysisConfig {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EntropyConfig {
+    #[serde(default = "default_window_size")]
     pub window_size: usize,
+    #[serde(default = "default_entropy_threshold")]
     pub threshold: f64,
+    #[serde(default = "default_learning_frames")]
     pub learning_frames: u64,
 }
 
 impl Default for EntropyConfig {
     fn default() -> Self {
         Self {
-            window_size: 64,
-            threshold: 6.5,
-            learning_frames: 1000,
+            window_size: default_window_size(),
+            threshold: default_entropy_threshold(),
+            learning_frames: default_learning_frames(),
         }
     }
 }
 
+fn default_window_size() -> usize { 64 }
+fn default_entropy_threshold() -> f64 { 6.5 }
+fn default_learning_frames() -> u64 { 1000 }
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PeriodConfig {
+    #[serde(default = "default_jitter_threshold")]
     pub jitter_threshold_pct: f64,
+    #[serde(default = "default_learning_samples")]
     pub learning_samples: usize,
 }
 
 impl Default for PeriodConfig {
     fn default() -> Self {
         Self {
-            jitter_threshold_pct: 25.0,
-            learning_samples: 100,
+            jitter_threshold_pct: default_jitter_threshold(),
+            learning_samples: default_learning_samples(),
         }
     }
 }
 
+fn default_jitter_threshold() -> f64 { 25.0 }
+fn default_learning_samples() -> usize { 100 }
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BurstConfig {
+    #[serde(default = "default_rate_multiplier")]
     pub rate_multiplier: f64,
+    #[serde(default = "default_window_secs")]
     pub window_secs: f64,
 }
 
 impl Default for BurstConfig {
     fn default() -> Self {
         Self {
-            rate_multiplier: 3.0,
-            window_secs: 1.0,
+            rate_multiplier: default_rate_multiplier(),
+            window_secs: default_window_secs(),
         }
     }
 }
+
+fn default_rate_multiplier() -> f64 { 3.0 }
+fn default_window_secs() -> f64 { 1.0 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AgentTaskConfig {

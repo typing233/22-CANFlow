@@ -127,17 +127,20 @@ fn lua_wrapper_code(script_path: &str) -> String {
     format!(r#"
 local json = {{}}
 function json.encode_frame(id, is_ext, dlc, data, ts)
-    local hex_data = ""
-    for i = 1, #data do
-        hex_data = hex_data .. string.format("%02x", string.byte(data, i))
+    -- CanId is stored as u32 with bit 31 = extended flag
+    local id_val = id
+    if is_ext then id_val = id + 2147483648 end
+    local data_parts = {{}}
+    for i = 1, 8 do
+        if i <= #data then
+            data_parts[i] = tostring(string.byte(data, i))
+        else
+            data_parts[i] = "0"
+        end
     end
-    local ext_flag = "false"
-    if is_ext then ext_flag = "true" end
     io.write(string.format(
-        '{{"id":{{"raw_id":%d,"is_extended":%s}},"dlc":%d,"data":[%s],"timestamp_ns":%d}}\n',
-        id, ext_flag, dlc,
-        table.concat({{string.byte(data, 1, #data)}}, ","),
-        ts or 0
+        '{{"timestamp_ns":%d,"id":%d,"dlc":%d,"data":[%s],"is_error":false,"is_remote":false,"interface":0}}\n',
+        ts or 0, id_val, dlc, table.concat(data_parts, ",")
     ))
     io.flush()
 end
@@ -160,6 +163,9 @@ end
 
 math.randomseed(os.time())
 
+-- Load and execute user script
+local user_dofile = dofile
+
 -- Remove dangerous globals
 os.execute = nil
 os.exit = nil
@@ -170,7 +176,6 @@ io.popen = nil
 loadfile = nil
 dofile = nil
 
--- Execute the user script
-dofile("{}")
+user_dofile("{}")
 "#, script_path.replace('\\', "\\\\").replace('"', "\\\""))
 }

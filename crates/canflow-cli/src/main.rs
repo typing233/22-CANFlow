@@ -129,11 +129,11 @@ async fn main() -> anyhow::Result<()> {
                         }
                     });
 
-                    let engine = canflow_agent::AgentEngine::new(tx.clone());
+                    let engine = canflow_agent::AgentEngine::new(tx);
                     let result = engine.run_script(&script).await?;
                     println!("{}", result);
 
-                    drop(tx);
+                    drop(engine);
                     print_handle.await?;
                 }
                 AgentAction::Pipeline { config } => {
@@ -150,13 +150,13 @@ async fn main() -> anyhow::Result<()> {
                         }
                     });
 
-                    let engine = canflow_agent::AgentEngine::new(tx.clone());
+                    let engine = canflow_agent::AgentEngine::new(tx);
                     let results = engine.run_pipeline(&pipeline).await?;
                     for r in results {
                         println!("  {}", r);
                     }
 
-                    drop(tx);
+                    drop(engine);
                     print_handle.await?;
                 }
                 AgentAction::Probe { target, interface: _ } => {

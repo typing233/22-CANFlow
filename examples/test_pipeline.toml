@@ -1,0 +1,14 @@
+name = "test-pipeline"
+edges = [[0, 1]]
+
+[[stages]]
+name = "lua-tester-present"
+[stages.agent]
+type = "Lua"
+script = "examples/tester_present.lua"
+
+[[stages]]
+name = "python-diag"
+[stages.agent]
+type = "Python"
+script = "examples/test_agent.py"

@@ -117,16 +117,22 @@ impl AgentEngine {
 
             let result = match &stage.agent {
                 crate::pipeline::StageAgent::Lua { script } => {
-                    let content = tokio::fs::read_to_string(script).await?;
-                    let runtime = LuaRuntime::new(&stage.name, &content, true)?;
-                    let frames = runtime.execute()?;
+                    let sandbox = SandboxConfig::default();
+                    let mut runner = ProcessRunner::lua(script, sandbox)?;
+                    let frames = runner.run_to_completion().await?;
                     for frame in &frames {
                         let _ = self.tx.send(frame.clone()).await;
                     }
                     format!("stage '{}': {} frames", stage.name, frames.len())
                 }
-                crate::pipeline::StageAgent::Python { script: _ } => {
-                    format!("stage '{}': python script queued", stage.name)
+                crate::pipeline::StageAgent::Python { script } => {
+                    let sandbox = SandboxConfig::default();
+                    let mut runner = ProcessRunner::python(script, sandbox)?;
+                    let frames = runner.run_to_completion().await?;
+                    for frame in &frames {
+                        let _ = self.tx.send(frame.clone()).await;
+                    }
+                    format!("stage '{}': {} frames", stage.name, frames.len())
                 }
                 crate::pipeline::StageAgent::Builtin { task } => {
                     format!("stage '{}': builtin '{}' executed", stage.name, task)
